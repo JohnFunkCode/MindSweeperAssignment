@@ -1,41 +1,46 @@
 package minesweeper;
 
 public class Cell {
-    private enum CellState{ MARKED, UNMARKED, NUMBER};
-    private CellState state = CellState.UNMARKED;
+    // private enum CellState{ MARKED, UNMARKED, NUMBER};
+    //private CellState state = CellState.UNMARKED;
+    private boolean isVisible = false ;
     private int nearbyMines=0;
-    private boolean mine=false;
+    private boolean markedAsMine = false ;
+    //private boolean mine=false;
+    protected boolean debugMode=false ;
 
     public Cell(){}
+    public Cell( boolean debugMode){ this.debugMode=debugMode;}
 
-    public boolean isNumber() {
-        return (state == CellState.NUMBER) ;
+
+    public boolean isMineBorder() {
+        return (this instanceof MineBorder) ;
     }
 
     public boolean isMarked(){
-        return (state == CellState.MARKED);
+        return (this.markedAsMine);
     }
     public boolean isUnMarked(){
-        return (state == CellState.UNMARKED);
+        return (!this.markedAsMine);
     }
 
-    public boolean isMine() { return mine;}
-    public boolean isNotMine() { return !mine;}
-    public void makeMine() { mine=true;}
+    public boolean isMine() { return this instanceof Mine;}
+    public boolean isNotMine() { return !(this instanceof Mine);}
 
     public int getNearbyMines() { return nearbyMines;}
     public void setNearbyMines(int howManyMines) { nearbyMines=howManyMines;}
 
-    public void makeMarked(){
-        state = CellState.MARKED ;
-    }
-    public void makeUnmark(){
-        state = CellState.UNMARKED;
-    }
-    public void makeNumber(){
-        state = CellState.NUMBER;
-    }
+    public void makeMarked(){this.markedAsMine=true;}
+    public void makeUnmarked(){this.markedAsMine=false;}
+//    public void makeNumber(){
+//        state = CellState.NUMBER;
+//    }
 
+    /* TBD simplify this using polymorphic behavior
+       e.g. a mine can tell if it's consistent, and
+       a border call can tell if it's consistent,
+       and a free cell can tell if it's consistent
+     */
     public boolean isConsistent() {
         boolean isSolved = true;
         //System.out.print("\n("+(x+1)+","+(y+1)+")");
@@ -49,7 +54,7 @@ public class Cell {
                 isSolved = false;
                 return isSolved;
             }
-        } else if (isNumber()) {
+        } else if (isMineBorder()) {
             // if it's a number no futher checks are necessary it's ok
             //System.out.print(" is a number");
         } else if (isNotMine()) {
@@ -67,5 +72,6 @@ public class Cell {
         return isSolved ;
     }
 
+    public void draw(){}
 }
 

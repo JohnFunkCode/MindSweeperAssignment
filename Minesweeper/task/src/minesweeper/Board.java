@@ -13,7 +13,7 @@ public class Board {
         cells = new Cell[SIZE_X][SIZE_X];
         for (int x = 0; x < 9; x++) {
             for (int y = 0; y < 9; y++) {
-                cells[x][y] = new Cell();
+                cells[x][y] = new Free( debugMode );
             }
         }
     }
@@ -26,28 +26,11 @@ public class Board {
         for (int y = 0; y < SIZE_X; y++) {
             System.out.print((y + 1) + "|");
             for (int x = 0; x < SIZE_Y; x++) {
-                if (cells[x][y].isMarked()) {
-                    printWithHighlight(x, y, "*");
-                } else if (cells[x][y].isNumber()) {
-                    //System.out.print(cells[x][y].getNearbyMines());
-                    printWithHighlight(x, y, Integer.toString(cells[x][y].getNearbyMines()));
-                } else {
-                    printWithHighlight(x, y, ".");
-                }
+                cells[x][y].draw();
             }
             System.out.println("|");
         }
         System.out.println("-|---------|");
-    }
-
-    private void printWithHighlight(int x, int y, String s) {
-        if (debugMode && cells[x][y].isMine()) {
-            System.out.print("\u001b[31m");
-        }
-        System.out.print(s);
-        if (debugMode && (cells[x][y].isMine())) {
-            System.out.print("\u001b[0m");
-        }
     }
 
     public void placeMines(int numberOfMines) {
@@ -61,7 +44,7 @@ public class Board {
             int x = random.nextInt(SIZE_X);
             int y = random.nextInt(SIZE_Y);
             if (cells[x][y].isNotMine()) {
-                cells[x][y].makeMine();
+                cells[x][y] = new Mine(debugMode);
                 numberOfMines--;
             }
         } while (numberOfMines > 0);
@@ -73,9 +56,7 @@ public class Board {
                 if (cells[x][y].isNotMine()) {
                     int numberOfNearByMines = countNearByMines(x, y);
                     if (numberOfNearByMines > 0) {
-                        cells[x][y].setNearbyMines(numberOfNearByMines);
-                        cells[x][y].makeNumber();
-                        ;
+                        cells[x][y] = new MineBorder(debugMode, numberOfNearByMines);
                     }
                 }
             }
@@ -99,11 +80,11 @@ public class Board {
         return mineCount;
     }
 
-    public void flipMineMarker(int x, int y) {
-        if (cells[x][y].isNumber()) {
+    public void flipVisibility(int x, int y) {
+        if (cells[x][y].isMineBorder()) {
             System.out.println("There is a number here!");
         } else if (cells[x][y].isMarked()) {
-            cells[x][y].makeUnmark();
+            cells[x][y].makeUnmarked();
         } else {
             cells[x][y].makeMarked();
         }

@@ -37,7 +37,7 @@ public class Game {
         --inputY;
         //System.out.println("X="+inputX+" Y="+inputY);
 
-        theBoard.flipMineMarker(inputX,inputY);
+        theBoard.flipVisibility(inputX,inputY);
 
     }
 
